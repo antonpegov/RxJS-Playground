@@ -26,16 +26,36 @@ const arrayObservable = createObservable( obs => {
 }); // Асинхронный источник
 
 // Подписки: 
-streamObservable.subscribe(observer);
-arrayObservable.subscribe(observer);
-
-streamObservable.map
-
+//streamObservable.subscribe(observer);
+//arrayObservable.subscribe(observer);
+streamObservable
+    .map( x => x*10 )
+    .subscribe(observer);
+arrayObservable
+    .map(x => x*2 )
+    .subscribe(observer);
+    
 // Конструктор наблюдабельных объектов
 function createObservable(subscrabeFn){
     return {
-        subscrabe: subscrabeFn
+        map: mapFn,
+        subscribe: subscrabeFn
     }
+}
+// Функция преобразования наблюдабельного объекта
+function mapFn(transformationFn){
+    const inputObservable = this; // Вызывающий ОБЗ
+    const outputObservable = createObservable( obs => {
+        // это функция, которая будет поставлять нам измененные данные,
+        // для этого внутри создаем промежуточного наблюдателя, получающего данные от
+        // ОБЗ-источника, преобразующего их и передающего конечному наблюдателю 
+        inputObservable.subscribe({
+            next: (x) => obs.next(transformationFn(x)), // трансформация и передача
+            complete: () => obs.complete(), // передача без изменений
+            error: (err) => obs.error(err)  // проброс ошибки
+        });
+    }); // Результирующий ОБЗ
+    return outputObservable;
 }
 
 /* ========== Примеры функций =========== */
