@@ -9,8 +9,8 @@ const observer = {
         console.log('Done');
     }
 }
-const observable = {
-    receiveData: function startReceivingDataFromStream(obs){
+const streamObservable = {
+    subscribe: function (obs){
         let count = 0;
         let I = setInterval(()=>{
             count++;
@@ -22,8 +22,14 @@ const observable = {
         },500)
     }
 } 
-observable.receiveData(observer);
-
+const arrayObservable = {
+    subscribe: function (obs){
+        [1,2,3,4,5].forEach(obs.next);
+        obs.complete();
+    }
+}
+streamObservable.subscribe(observer);
+arrayObservable.subscribe(observer);
 
 
 /* ========== Примеры функций =========== */
