@@ -9,28 +9,29 @@ const observer = {
         console.log('Done');
     }
 }
-const streamObservable = {
-    subscribe: function (obs){
-        let count = 0;
-        let I = setInterval(()=>{
-            count++;
-            obs.next(count);
-            if(count > 4){ 
-                clearInterval(I);
-                obs.complete();
-            }
-        },500)
-    }
-} 
-const arrayObservable = {
-    subscribe: function (obs){
-        [1,2,3,4,5].forEach(obs.next);
-        obs.complete();
-    }
-}
+const streamObservable = createObservable( obs => {
+    let count = 0;
+    let I = setInterval(()=>{
+        count++;
+        obs.next(count);
+        if(count > 4){ 
+            clearInterval(I);
+            obs.complete();
+        }
+    },500)
+});
+const arrayObservable = createObservable( obs => {
+    [1,2,3,4,5].forEach(obs.next);
+    obs.complete();
+});
 streamObservable.subscribe(observer);
 arrayObservable.subscribe(observer);
 
+function createObservable(subscrabeFn){
+    return {
+        subscrabe: subscrabeFn
+    }
+}
 
 /* ========== Примеры функций =========== */
 
