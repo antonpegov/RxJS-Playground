@@ -8,7 +8,7 @@ const observer = {
     complete: function (){
         console.log('Done');
     }
-}
+} // Мой "наблюдатель"
 const streamObservable = createObservable( obs => {
     let count = 0;
     let I = setInterval(()=>{
@@ -19,14 +19,19 @@ const streamObservable = createObservable( obs => {
             obs.complete();
         }
     },500)
-});
+}); // Синхронный источник
 const arrayObservable = createObservable( obs => {
     [1,2,3,4,5].forEach(obs.next);
     obs.complete();
-});
+}); // Асинхронный источник
+
+// Подписки: 
 streamObservable.subscribe(observer);
 arrayObservable.subscribe(observer);
 
+streamObservable.map
+
+// Конструктор наблюдабельных объектов
 function createObservable(subscrabeFn){
     return {
         subscrabe: subscrabeFn
