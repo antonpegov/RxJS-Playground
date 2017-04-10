@@ -29,20 +29,23 @@ const arrayObservable = createObservable( obs => {
 //streamObservable.subscribe(observer);
 //arrayObservable.subscribe(observer);
 streamObservable
-    .map( x => x*10 )
+    .filter(x => x%2 === 0)
+    .map(x => x*100)
     .subscribe(observer);
 arrayObservable
-    .map(x => x*2 )
+    .filter(x => x%2 !== 0)
+    .map(x => x*10 )
     .subscribe(observer);
-    
+
 // Конструктор наблюдабельных объектов
 function createObservable(subscrabeFn){
     return {
         map: mapFn,
+        filter: filterFn,
         subscribe: subscrabeFn
     }
 }
-// Функция преобразования наблюдабельного объекта
+// Функция преобразования данных от наблюдабельного объекта (ОБЗ)
 function mapFn(transformationFn){
     const inputObservable = this; // Вызывающий ОБЗ
     const outputObservable = createObservable( obs => {
@@ -51,6 +54,21 @@ function mapFn(transformationFn){
         // ОБЗ-источника, преобразующего их и передающего конечному наблюдателю 
         inputObservable.subscribe({
             next: (x) => obs.next(transformationFn(x)), // трансформация и передача
+            complete: () => obs.complete(), // передача без изменений
+            error: (err) => obs.error(err)  // проброс ошибки
+        });
+    }); // Результирующий ОБЗ
+    return outputObservable;
+}
+// Функция фильтрации данных наблюдабельного объекта (ОБЗ)
+function filterFn(conditionFn){
+    const inputObservable = this; // Вызывающий ОБЗ
+    const outputObservable = createObservable( obs => {
+        // это функция, которая будет поставлять нам измененные данные,
+        // для этого внутри создаем промежуточного наблюдателя, получающего данные от
+        // ОБЗ-источника, преобразующего их и передающего конечному наблюдателю 
+        inputObservable.subscribe({
+            next: (x) => conditionFn(x) && obs.next(x), // передача при прохождении условия
             complete: () => obs.complete(), // передача без изменений
             error: (err) => obs.error(err)  // проброс ошибки
         });
