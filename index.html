@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>RjJS Playground</title>
+    <style>
+        .led{
+            display: inline-block;
+            border-radius: 50%;
+            width:100px;
+            height: 100px;
+            background: gray;
+        }
+        .green.on{
+            background: green;
+        }
+        .red.on{
+            background: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="led green" id="greenLed"></div>
+    <div class="led red" id="redLed"></div>
+
+    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.3.0/Rx.min.js" type="text/javascript"></script>
+    <script src="script.js"></script>
+</body>
+</html>
