@@ -20,10 +20,22 @@ $(() => {
     // Стрим данных от поля ввода имени пользователя
     const input$ = Rx.Observable.fromEvent($search, 'input');
 
+    // Обработка потока данных от поля ввода
+    input$
+        .map((e) => e.target.value)     // Достать из события значение инпута
+        .filter((text) => text.length>2)// Отфильтровать короткие строки
+        .debounceTime(300)              // Поставить задержку отправки данных
+        .switchMap(getUsers)            // Заменить стрим с вводом на стрим с данными 
+        .pluck('items')                 // Извлечь из объекта вложенный объект items
+        .subscribe( (data) => {
+            $list.html(data.map(d => 
+                `<li><b>${d.login}</b> Url:<a target='_new' href='${d.html_url}'>${d.html_url}</a></li>`
+            )) // Отрисовать список полученных имен
+        });
+    
     startClicks$.subscribe(()=>console.log('Start Clicked')); // тест стрима нажатий на Старт
     stopClicks$.subscribe(()=>console.log('Stop Clicked'));   // тест стрима нажатий на Стоп
-    input$.map((e)=>e.target.value).subscribe((data)=>console.log(data));   // тест Инпута
-
+    
     // Запуск и остановка мигания зеленого диода
     startClicks$
         .switchMap(()=>{
@@ -41,6 +53,8 @@ $(() => {
         });
 
     function getUsers(text){
-        return fetch('https://api.gihub.com/users' + text).then(res => res.json())
+        const response = fetch('https://api.github.com/search/users?q=' + text)
+            .then(res => res.json());               // Промис, возвращаемый запросом
+        return Rx.Observable.fromPromise(response)  // упаковывается в стрим (ОБЗ)
     }
 });
