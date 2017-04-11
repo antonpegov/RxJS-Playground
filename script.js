@@ -17,10 +17,15 @@ $(() => {
     startClicks$.subscribe(()=>console.log('Start Clicked')); // тест стрима нажатий на Старт
     stopClicks$.subscribe(()=>console.log('Stop Clicked'));   // тест стрима нажатий на Стоп
 
-    interval$
+    // Запуск и остановка мигания зеленого диода
+    startClicks$
+        .switchMap(()=>{
+            return interval$.takeUntil(stopClicks$);
+        })
         .subscribe((c) => {
             $greenLed.toggleClass('on'); 
-        });
+        });  
+    // Красный диод привязан к стриму intrval$ с задержкой в 20мс    
     interval$
         .delay(200)
         .subscribe((c) => {
